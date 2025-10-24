@@ -1528,8 +1528,30 @@ fun PrayerTimesScreen(
 // =========================== أدوات مساعدة ===============================
 private val DATE_KEY_FORMAT by lazy { SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).apply { timeZone = TimeZone.getDefault() } }
 private val DATE_TIME_PARSER by lazy { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ROOT).apply { timeZone = TimeZone.getDefault() } }
-private val ARABIC_DAY_FORMAT by lazy { SimpleDateFormat("EEEE", Locale("ar")).apply { timeZone = TimeZone.getDefault() } }
-private val ARABIC_DATE_FORMAT by lazy { SimpleDateFormat("d MMMM", Locale("ar")).apply { timeZone = TimeZone.getDefault() } }
+private val ARABIC_WEEKDAY_NAMES = mapOf(
+    Calendar.SATURDAY to "السبت",
+    Calendar.SUNDAY to "الأحد",
+    Calendar.MONDAY to "الإثنين",
+    Calendar.TUESDAY to "الثلاثاء",
+    Calendar.WEDNESDAY to "الأربعاء",
+    Calendar.THURSDAY to "الخميس",
+    Calendar.FRIDAY to "الجمعة"
+)
+
+private val ARABIC_MONTH_NAMES = arrayOf(
+    "يناير",
+    "فبراير",
+    "مارس",
+    "ابريل",
+    "مايو",
+    "يونيو",
+    "يوليو",
+    "اغسطس",
+    "سبتمبر",
+    "اكتوبر",
+    "نوفمبر",
+    "ديسمبر"
+)
 private val TIME_DISPLAY_FORMAT by lazy { SimpleDateFormat("HH:mm:ss", Locale.ROOT).apply { timeZone = TimeZone.getDefault() } }
 
 private fun isDateKey(value: String?): Boolean =
@@ -1544,8 +1566,17 @@ private fun formatDuration(millis: Long): String {
 }
 
 fun dateKeyForMillis(millis: Long): String = DATE_KEY_FORMAT.format(Date(millis))
-fun dayNameForMillis(millis: Long): String = ARABIC_DAY_FORMAT.format(Date(millis))
-fun displayDateForMillis(millis: Long): String = ARABIC_DATE_FORMAT.format(Date(millis)).toEnglishDigits()
+fun dayNameForMillis(millis: Long): String {
+    val calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).apply { timeInMillis = millis }
+    return ARABIC_WEEKDAY_NAMES[calendar.get(Calendar.DAY_OF_WEEK)] ?: ""
+}
+
+fun displayDateForMillis(millis: Long): String {
+    val calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.ROOT).apply { timeInMillis = millis }
+    val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+    val monthName = ARABIC_MONTH_NAMES.getOrNull(calendar.get(Calendar.MONTH)) ?: ""
+    return String.format(Locale.ROOT, "%d %s", dayOfMonth, monthName).toEnglishDigits()
+}
 
 private fun String.toEnglishDigits(): String {
     if (isEmpty()) return this
