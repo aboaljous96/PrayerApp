@@ -1,0 +1,14 @@
+# Ignore Gradle build files
+.gradle/
+build/
+
+# IDE folders
+.idea/
+.vscode/
+
+# Output binaries
+bin/
+
+# OS files
+.DS_Store
+Thumbs.db
